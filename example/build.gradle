@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+group 'dev.robothanzo.jda.interactions'
+version '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(rootProject)// replace this with the dependency provided in README.md
+    implementation('net.dv8tion:JDA:5.0.0-alpha.5')
+    implementation('org.reflections:reflections:0.10.2') // you don't need to include this, but we have to do it here due to how gradle works
+    implementation('io.github.cdimascio:dotenv-java:2.2.3')
+    implementation('ch.qos.logback:logback-classic:1.2.10')
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'dev.robothanzo.jda.interactions.example.ExampleBot'
+    }
+}
+java {
+    withSourcesJar()
+}
+
+tasks.build.dependsOn('shadowJar')
