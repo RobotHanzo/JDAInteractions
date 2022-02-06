@@ -1,3 +1,4 @@
 rootProject.name = 'JDAInteractions'
-include 'example'
+if (!System.env.JITPACK)
+    include 'example'
 
