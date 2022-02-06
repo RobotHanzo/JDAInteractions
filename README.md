@@ -14,8 +14,7 @@ dependencies {
 }
 ```
 
-###Examples
-
+### Examples
 Refer to the example folder for more information.
 
 
