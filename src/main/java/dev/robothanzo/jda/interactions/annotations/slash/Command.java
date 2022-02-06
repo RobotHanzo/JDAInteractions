@@ -20,6 +20,7 @@ public @interface Command {
 
     /**
      * The description of the command (group)
+     * Defaults to the name of the command (group).
      */
-    String description();
+    String description() default "";
 }

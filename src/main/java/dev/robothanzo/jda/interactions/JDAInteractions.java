@@ -125,10 +125,7 @@ public class JDAInteractions {
     private void collectButtons() {
         for (Method method : reflections.getMethodsAnnotatedWith(Button.class)) {
             Button button = method.getAnnotation(Button.class);
-            String buttonName = button.value();
-            if (Objects.equals(buttonName, "")) {
-                buttonName = method.getName();
-            }
+            String buttonName = button.value().isEmpty() ? method.getName() : button.value();
             if (buttons.containsKey(buttonName)) {
                 throw new IllegalArgumentException("Duplicate button: " + buttonName);
             }
@@ -142,10 +139,7 @@ public class JDAInteractions {
     private void collectAutoCompleters() {
         for (Method method : reflections.getMethodsAnnotatedWith(AutoCompleter.class)) {
             AutoCompleter autoCompleter = method.getAnnotation(AutoCompleter.class);
-            String autoCompleterName = autoCompleter.value();
-            if (Objects.equals(autoCompleterName, "")) {
-                autoCompleterName = method.getName().toLowerCase(Locale.ROOT);
-            }
+            String autoCompleterName = autoCompleter.value().isEmpty() ? method.getName().toLowerCase(Locale.ROOT) : autoCompleter.value();
             if (autoCompleters.containsKey(autoCompleterName)) {
                 throw new IllegalArgumentException("Duplicate auto completer: " + autoCompleterName);
             }
@@ -159,10 +153,7 @@ public class JDAInteractions {
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     private OptionData getOptionFromParameter(Parameter parameter) {
         Option option = parameter.getAnnotation(Option.class);
-        String optionName = option.value();
-        if (Objects.equals(optionName, "")) {
-            optionName = parameter.getName().toLowerCase(Locale.ROOT);
-        }
+        String optionName = option.value().isEmpty() ? parameter.getName().toLowerCase(Locale.ROOT) : option.value();
         OptionType optionType;
         Class<?> type = parameter.getType();
         if (OPTION_TYPE_CLASS_MAP.containsValue(type)) {
@@ -175,7 +166,8 @@ public class JDAInteractions {
             throw new IllegalArgumentException("Auto completer not found for an autocomplete enabled option: " + optionName);
         }
 
-        OptionData optionData = new OptionData(optionType, optionName, option.description(),
+        OptionData optionData = new OptionData(optionType, optionName,
+                option.description().isEmpty() ? optionName : option.description(),
                 !option.optional(), option.autoComplete());
         if (optionType == OptionType.INTEGER) {
             if (option.minLong() != Long.MIN_VALUE) {
@@ -224,15 +216,13 @@ public class JDAInteractions {
         for (Method method : clazz.getDeclaredMethods()) {
             if (method.isAnnotationPresent(Subcommand.class)) {
                 Subcommand subcommand = method.getAnnotation(Subcommand.class);
-                String subcommandName = subcommand.value();
-                if (Objects.equals(subcommandName, "")) {
-                    subcommandName = method.getName().toLowerCase(Locale.ROOT);
-                }
+                String subcommandName = subcommand.value().isEmpty() ? method.getName().toLowerCase(Locale.ROOT) : subcommand.value();
                 if (subcommands.containsKey(subcommandName)) {
                     throw new IllegalArgumentException("Duplicated subcommand: " + subcommandName);
                 }
                 subcommands.put(subcommandName,
-                        new SubcommandData(subcommandName, subcommand.description()).addOptions(collectOptions(method)));
+                        new SubcommandData(subcommandName, subcommand.description().isEmpty() ? subcommandName : subcommand.description())
+                                .addOptions(collectOptions(method)));
                 this.commands.put(rootPath + "/" + subcommandName, method);
             }
         }
@@ -244,14 +234,12 @@ public class JDAInteractions {
         for (Class<?> clazz : rootClass.getDeclaredClasses()) {
             if (clazz.isAnnotationPresent(Subcommand.class)) {
                 Subcommand subcommand = clazz.getAnnotation(Subcommand.class);
-                String subcommandName = subcommand.value();
-                if (Objects.equals(subcommandName, "")) {
-                    subcommandName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
-                }
+                String subcommandName = subcommand.value().isEmpty() ? clazz.getSimpleName().toLowerCase(Locale.ROOT) : subcommand.value();
                 if (subcommandGroups.containsKey(subcommandName)) {
                     throw new IllegalArgumentException("Duplicated subcommand group: " + subcommandName);
                 }
-                subcommandGroups.put(subcommandName, new SubcommandGroupData(subcommandName, subcommand.description())
+                subcommandGroups.put(subcommandName,
+                        new SubcommandGroupData(subcommandName, subcommand.description().isEmpty() ? subcommandName : subcommand.description())
                         .addSubcommands(collectSubcommands(clazz, rootPath + "/" + subcommandName)));
             }
         }
@@ -262,27 +250,21 @@ public class JDAInteractions {
         Map<String, CommandData> commands = new HashMap<>();
         for (Class<?> clazz : reflections.getTypesAnnotatedWith(Command.class)) {
             Command command = clazz.getAnnotation(Command.class);
-            String commandName = command.value();
-            if (Objects.equals(commandName, "")) {
-                commandName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
-            }
+            String commandName = command.value().isEmpty() ? clazz.getSimpleName().toLowerCase(Locale.ROOT) : command.value();
             if (commands.containsKey(commandName)) {
                 throw new IllegalArgumentException("Duplicate slash command: " + commandName);
             }
-            commands.put(commandName, Commands.slash(commandName, command.description())
+            commands.put(commandName, Commands.slash(commandName, command.description().isEmpty() ? commandName : command.description())
                     .addSubcommandGroups(collectSubcommandGroups(clazz, commandName))
                     .addSubcommands(collectSubcommands(clazz, commandName)));
         }
         for (Method method : reflections.getMethodsAnnotatedWith(Command.class)) {
             Command command = method.getAnnotation(Command.class);
-            String commandName = command.value();
-            if (Objects.equals(commandName, "")) {
-                commandName = method.getName().toLowerCase(Locale.ROOT);
-            }
+            String commandName = command.value().isEmpty() ? method.getName().toLowerCase(Locale.ROOT) : command.value();
             if (commands.containsKey(commandName)) {
                 throw new IllegalArgumentException("Duplicate slash command: " + commandName);
             } else {
-                commands.put(commandName, Commands.slash(commandName, command.description())
+                commands.put(commandName, Commands.slash(commandName, command.description().isEmpty() ? commandName : command.description())
                         .addOptions(collectOptions(method)));
                 this.commands.put(commandName, method);
             }
@@ -300,10 +282,7 @@ public class JDAInteractions {
                 throw new IllegalArgumentException("Invalid message context command (invalid parameter type, must be MessageContextInteractionEvent): " + method.getName());
             }
             MessageCtx ctx = method.getAnnotation(MessageCtx.class);
-            String commandName = ctx.value();
-            if (Objects.equals(commandName, "")) {
-                commandName = method.getName();
-            }
+            String commandName = ctx.value().isEmpty() ? method.getName() : ctx.value();
             ctxCommands.put(commandName, Commands.message(commandName));
             this.messageContextCommands.put(commandName, method);
         }
@@ -315,10 +294,7 @@ public class JDAInteractions {
                 throw new IllegalArgumentException("Invalid user context command (invalid parameter type, must be UserContextInteractionEvent): " + method.getName());
             }
             UserCtx ctx = method.getAnnotation(UserCtx.class);
-            String commandName = ctx.value();
-            if (Objects.equals(commandName, "")) {
-                commandName = method.getName();
-            }
+            String commandName = ctx.value().isEmpty() ? method.getName() : ctx.value();
             ctxCommands.put(commandName, Commands.user(commandName));
             this.userContextCommands.put(commandName, method);
         }

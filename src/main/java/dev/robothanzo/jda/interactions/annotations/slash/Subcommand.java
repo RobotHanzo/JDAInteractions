@@ -20,6 +20,7 @@ public @interface Subcommand {
 
     /**
      * The description of the subcommand (group)
+     * Defaults to the name of the subcommand (group).
      */
-    String description();
+    String description() default "";
 }

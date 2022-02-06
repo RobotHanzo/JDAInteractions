@@ -33,8 +33,9 @@ public @interface Option {
 
     /**
      * The description of the option.
+     * Defaults to the name of the option.
      */
-    String description();
+    String description() default "";
 
     /**
      * The minimum value of the option.
