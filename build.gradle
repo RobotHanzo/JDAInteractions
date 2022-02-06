@@ -1,18 +1,22 @@
 plugins {
-    id 'java'
+    id 'java-library'
 }
 
 group 'dev.robothanzo'
-version '0.0.1'
+version '0.0.3'
 sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
 }
 
+configurations {
+    implementation.extendsFrom(shaded)
+}
+
 dependencies {
-    implementation('net.dv8tion:JDA:5.0.0-alpha.5')
-    implementation('org.reflections:reflections:0.10.2')
+    api('net.dv8tion:JDA:5.0.0-alpha.5')
+    shaded('org.reflections:reflections:0.10.2')
 
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
@@ -21,3 +25,10 @@ dependencies {
 java {
     withSourcesJar()
 }
+
+jar {
+    from {
+        configurations.shaded.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
