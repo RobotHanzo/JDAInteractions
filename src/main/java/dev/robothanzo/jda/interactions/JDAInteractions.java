@@ -240,7 +240,7 @@ public class JDAInteractions {
                 }
                 subcommandGroups.put(subcommandName,
                         new SubcommandGroupData(subcommandName, subcommand.description().isEmpty() ? subcommandName : subcommand.description())
-                        .addSubcommands(collectSubcommands(clazz, rootPath + "/" + subcommandName)));
+                                .addSubcommands(collectSubcommands(clazz, rootPath + "/" + subcommandName)));
             }
         }
         return subcommandGroups.values().toArray(SubcommandGroupData[]::new);

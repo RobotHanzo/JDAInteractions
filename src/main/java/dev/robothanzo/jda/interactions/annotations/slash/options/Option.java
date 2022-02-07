@@ -28,6 +28,10 @@ public @interface Option {
     /**
      * The name of the option.
      * Defaults to the lowercase parameter name.
+     * <h1>
+     *     If you are using Gradle, there is a high chance that you get something like arg1, arg2 instead of the actual parameter name if you leave it empty.
+     *     It's not a bug, it's how Gradle works.
+     * </h1>
      */
     String value() default "";
 
