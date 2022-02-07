@@ -51,7 +51,7 @@ import java.util.Objects;
 public class JDAInteractions {
     public static final Map<OptionType, Class<?>> OPTION_TYPE_CLASS_MAP = Map.of(
             OptionType.STRING, String.class,
-            OptionType.INTEGER, Integer.class,
+            OptionType.INTEGER, Long.class,
             OptionType.NUMBER, Double.class,
             OptionType.BOOLEAN, Boolean.class,
             OptionType.USER, User.class,
