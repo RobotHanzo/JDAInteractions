@@ -10,7 +10,7 @@ public class Pick {
     @Subcommand(description = "Pick groceries")
     public static class Groceries {
         @Subcommand(description = "Pick fruits")
-        public void fruits(SlashCommandInteractionEvent event, @Option(value = "fruit", description="Which fruit", autoComplete = true) String fruit){
+        public void fruits(SlashCommandInteractionEvent event, @Option(value = "fruit", description = "Which fruit", autoComplete = true) String fruit) {
             event.reply("You picked a " + fruit).queue();
         }
     }

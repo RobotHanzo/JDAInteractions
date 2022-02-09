@@ -1,6 +1,7 @@
 package dev.robothanzo.jda.interactions;
 
 import dev.robothanzo.jda.interactions.annotations.Button;
+import dev.robothanzo.jda.interactions.annotations.SelectMenu;
 import dev.robothanzo.jda.interactions.annotations.context.MessageCtx;
 import dev.robothanzo.jda.interactions.annotations.context.UserCtx;
 import dev.robothanzo.jda.interactions.annotations.slash.Command;
@@ -26,6 +27,7 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -68,6 +70,8 @@ public class JDAInteractions {
     @Getter
     private final Map<String, Method> buttons = new HashMap<>();
     @Getter
+    private final Map<String, Method> selectMenu = new HashMap<>();
+    @Getter
     private final Map<String, Method> autoCompleters = new HashMap<>();
     @Getter
     private final Map<Class<?>, IMapper<?, ?>> mappers = new HashMap<>();
@@ -76,6 +80,7 @@ public class JDAInteractions {
         this.reflections = reflections;
         collectMappers();
         collectButtons();
+        collectSelectMenus();
         collectAutoCompleters();
     }
 
@@ -83,6 +88,7 @@ public class JDAInteractions {
         this.reflections = new Reflections(packages, Scanners.FieldsAnnotated, Scanners.MethodsAnnotated, Scanners.TypesAnnotated);
         collectMappers();
         collectButtons();
+        collectSelectMenus();
         collectAutoCompleters();
     }
 
@@ -90,6 +96,7 @@ public class JDAInteractions {
         this.reflections = new Reflections(Scanners.FieldsAnnotated, Scanners.MethodsAnnotated, Scanners.TypesAnnotated);
         collectMappers();
         collectButtons();
+        collectSelectMenus();
         collectAutoCompleters();
     }
 
@@ -133,6 +140,20 @@ public class JDAInteractions {
                 throw new IllegalArgumentException("Invalid button (must contain exactly one parameter of type ButtonInteractionEvent): " + buttonName);
             }
             buttons.put(buttonName, method);
+        }
+    }
+
+    private void collectSelectMenus() {
+        for (Method method : reflections.getMethodsAnnotatedWith(SelectMenu.class)) {
+            SelectMenu menu = method.getAnnotation(SelectMenu.class);
+            String menuName = menu.value().isEmpty() ? method.getName() : menu.value();
+            if (selectMenu.containsKey(menuName)) {
+                throw new IllegalArgumentException("Duplicate select menu: " + menuName);
+            }
+            if (method.getParameters().length != 1 || method.getParameters()[0].getType() != SelectMenuInteractionEvent.class) {
+                throw new IllegalArgumentException("Invalid button (must contain exactly one parameter of type SelectMenuInteractionEvent): " + menuName);
+            }
+            selectMenu.put(menuName, method);
         }
     }
 
