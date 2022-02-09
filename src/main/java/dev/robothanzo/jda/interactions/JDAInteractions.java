@@ -13,6 +13,7 @@ import dev.robothanzo.jda.interactions.annotations.slash.options.Option;
 import dev.robothanzo.jda.interactions.listeners.AutoCompleteListener;
 import dev.robothanzo.jda.interactions.listeners.ButtonListener;
 import dev.robothanzo.jda.interactions.listeners.MessageContextCommandListener;
+import dev.robothanzo.jda.interactions.listeners.SelectMenuListener;
 import dev.robothanzo.jda.interactions.listeners.SlashCommandListener;
 import dev.robothanzo.jda.interactions.listeners.UserContextCommandListener;
 import lombok.Getter;
@@ -328,7 +329,8 @@ public class JDAInteractions {
                 new ButtonListener(this),
                 new MessageContextCommandListener(this),
                 new SlashCommandListener(this),
-                new UserContextCommandListener(this)
+                new UserContextCommandListener(this),
+                new SelectMenuListener(this)
         );
         return Objects.requireNonNull(shardManager.getShardById(0)).updateCommands()
                 .addCommands(collectCommands()).addCommands(collectContextCommands());
@@ -340,7 +342,8 @@ public class JDAInteractions {
                 new ButtonListener(this),
                 new MessageContextCommandListener(this),
                 new SlashCommandListener(this),
-                new UserContextCommandListener(this)
+                new UserContextCommandListener(this),
+                new SelectMenuListener(this)
         );
         return jda.updateCommands().addCommands(collectCommands()).addCommands(collectContextCommands());
     }
@@ -351,7 +354,8 @@ public class JDAInteractions {
                 new ButtonListener(this),
                 new MessageContextCommandListener(this),
                 new SlashCommandListener(this),
-                new UserContextCommandListener(this)
+                new UserContextCommandListener(this),
+                new SelectMenuListener(this)
         );
         return guild.updateCommands().addCommands(collectCommands()).addCommands(collectContextCommands());
     }
