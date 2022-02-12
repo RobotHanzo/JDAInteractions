@@ -184,7 +184,7 @@ public class JDAInteractions {
             optionType = getOptionType(parameter);
         }
 
-        if (option.autoComplete() && (!autoCompleters.containsKey(optionName))) {
+        if (option.autoComplete() && (!autoCompleters.containsKey(option.autoCompleter().isEmpty() ? optionName : option.autoCompleter()))) {
             throw new IllegalArgumentException("Auto completer not found for an autocomplete enabled option: " + optionName);
         }
 

@@ -79,9 +79,15 @@ public @interface Option {
 
     /**
      * Whether the option can be auto completed.
-     * An {@link AutoCompleter} with the same value must be registered if it is {@code true}.
+     * An {@link AutoCompleter} must be registered if it is {@code true}.
      *
      * @throws IllegalArgumentException if the option is auto completable, no autoCompleteValues and no {@link AutoCompleter} is registered.
      */
     boolean autoComplete() default false;
+
+    /**
+     * The auto completer's name.
+     * Defaults to the name of the option.
+     */
+    String autoCompleter() default "";
 }
