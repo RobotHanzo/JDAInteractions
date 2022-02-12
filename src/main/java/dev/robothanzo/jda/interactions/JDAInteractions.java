@@ -161,7 +161,7 @@ public class JDAInteractions {
     private void collectAutoCompleters() {
         for (Method method : reflections.getMethodsAnnotatedWith(AutoCompleter.class)) {
             AutoCompleter autoCompleter = method.getAnnotation(AutoCompleter.class);
-            String autoCompleterName = autoCompleter.value().isEmpty() ? method.getName().toLowerCase(Locale.ROOT) : autoCompleter.value();
+            String autoCompleterName = autoCompleter.value().isEmpty() ? method.getName() : autoCompleter.value();
             if (autoCompleters.containsKey(autoCompleterName)) {
                 throw new IllegalArgumentException("Duplicate auto completer: " + autoCompleterName);
             }

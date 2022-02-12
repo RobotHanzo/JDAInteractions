@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 public @interface AutoCompleter {
     /**
      * The name of the option to auto complete
-     * Defaults to the lowercase name of the method
+     * Defaults to the name of the method
      **/
     String value() default "";
 }

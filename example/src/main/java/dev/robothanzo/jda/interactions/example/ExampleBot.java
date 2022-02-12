@@ -17,8 +17,10 @@ public class ExampleBot {
         JDAInteractions jdaInteractions = new JDAInteractions("dev.robothanzo.jda.interactions.example");
         if (dotenv.get("GUILD", null) != null) {
             jda.awaitReady();
+            System.out.println("Registering commands to " + dotenv.get("GUILD"));
             jdaInteractions.registerInteractions(Objects.requireNonNull(jda.getGuildById(dotenv.get("GUILD")))).queue();
         } else {
+            System.out.println("Registering commands to GLOBAL");
             jdaInteractions.registerInteractions(jda).queue();
         }
     }
