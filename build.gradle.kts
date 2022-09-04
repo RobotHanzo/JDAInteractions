@@ -31,11 +31,16 @@ tasks {
             include(dependency("org.reflections:reflections:0.10.2"))
             include(dependency("net.dv8tion:JDA:5.0.0-alpha.18"))
         }
+        archiveClassifier.set("")
     }
 
     compileJava {
         options.encoding = Charsets.UTF_8.name()
         options.release.set(17)
+    }
+
+    build {
+        dependsOn("shadowJar")
     }
 }
 
