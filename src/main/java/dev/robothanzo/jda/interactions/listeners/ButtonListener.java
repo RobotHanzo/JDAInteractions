@@ -7,7 +7,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.internal.JDAImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
@@ -27,11 +26,13 @@ public class ButtonListener extends ListenerAdapter {
             Method method = jdaInteractions.getButtons().get(event.getButton().getId());
             try {
                 method.invoke(method.getDeclaringClass().getDeclaredConstructors()[0].newInstance(), event);
-                log.info("Processed button {} in {}ms", event.getButton().getId(), (new Date().getTime() - beganProcessing.getTime()));
-                ((JDAImpl) event.getJDA()).handleEvent(new ButtonEvent(event.getJDA(), true, event.getButton().getId(), null));
+                long elapsed = new Date().getTime() - beganProcessing.getTime();
+                log.info("Processed button {} in {}ms", event.getButton().getId(), elapsed);
+                event.getJDA().getEventManager().handle(new ButtonEvent(event.getJDA(), true, event.getButton().getId(), null, elapsed));
             } catch (Exception e) {
-                log.error("Execution of button {} failed after {}ms", event.getButton().getId(), (new Date().getTime() - beganProcessing.getTime()), e);
-                ((JDAImpl) event.getJDA()).handleEvent(new ButtonEvent(event.getJDA(), false, event.getButton().getId(), e));
+                long elapsed = new Date().getTime() - beganProcessing.getTime();
+                log.error("Execution of button {} failed after {}ms", event.getButton().getId(), elapsed, e);
+                event.getJDA().getEventManager().handle(new ButtonEvent(event.getJDA(), false, event.getButton().getId(), e, elapsed));
             }
         }
     }

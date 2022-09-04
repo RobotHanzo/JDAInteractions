@@ -15,11 +15,13 @@ public class ButtonEvent extends Event {
     private final String button;
     @Nullable
     private final Exception exception;
+    private final long elapsed;
 
-    public ButtonEvent(@NotNull JDA api, boolean success, String button, @Nullable Exception exception) {
+    public ButtonEvent(@NotNull JDA api, boolean success, String button, @Nullable Exception exception, long elapsed) {
         super(api);
         this.success = success;
         this.button = button;
         this.exception = exception;
+        this.elapsed = elapsed;
     }
 }

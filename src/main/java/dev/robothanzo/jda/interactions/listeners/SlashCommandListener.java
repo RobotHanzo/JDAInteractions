@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.internal.JDAImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
@@ -75,11 +74,13 @@ public class SlashCommandListener extends ListenerAdapter {
             }
             try {
                 method.invoke(method.getDeclaringClass().getDeclaredConstructors()[0].newInstance(), parameters.toArray());
-                log.info("Processed command {} in {}ms", event.getCommandPath(), (new Date().getTime() - beganProcessing.getTime()));
-                ((JDAImpl) event.getJDA()).handleEvent(new SlashCommandEvent(event.getJDA(), true, event.getCommandPath(), null));
+                long elapsed = new Date().getTime() - beganProcessing.getTime();
+                log.info("Processed command {} in {}ms", event.getCommandPath(), elapsed);
+                event.getJDA().getEventManager().handle(new SlashCommandEvent(event.getJDA(), true, event.getCommandPath(), null, elapsed));
             } catch (Exception e) {
-                log.error("Execution of command {} failed after {}ms", event.getCommandPath(), new Date().getTime() - beganProcessing.getTime(), e);
-                ((JDAImpl) event.getJDA()).handleEvent(new SlashCommandEvent(event.getJDA(), false, event.getCommandPath(), e));
+                long elapsed = new Date().getTime() - beganProcessing.getTime();
+                log.error("Execution of command {} failed after {}ms", event.getCommandPath(), elapsed, e);
+                event.getJDA().getEventManager().handle(new SlashCommandEvent(event.getJDA(), false, event.getCommandPath(), e, elapsed));
             }
         }
     }

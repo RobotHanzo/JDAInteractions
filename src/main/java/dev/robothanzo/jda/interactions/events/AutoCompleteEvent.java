@@ -15,11 +15,13 @@ public class AutoCompleteEvent extends Event {
     private final String completer;
     @Nullable
     private final Exception exception;
+    private final long elapsed;
 
-    public AutoCompleteEvent(@NotNull JDA api, boolean success, String completer, @Nullable Exception exception) {
+    public AutoCompleteEvent(@NotNull JDA api, boolean success, String completer, @Nullable Exception exception, long elapsed) {
         super(api);
         this.success = success;
         this.completer = completer;
         this.exception = exception;
+        this.elapsed = elapsed;
     }
 }

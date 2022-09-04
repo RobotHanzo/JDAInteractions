@@ -15,11 +15,13 @@ public class SelectMenuEvent extends Event {
     private final String menu;
     @Nullable
     private final Exception exception;
+    private final long elapsed;
 
-    public SelectMenuEvent(@NotNull JDA api, boolean success, String menu, @Nullable Exception exception) {
+    public SelectMenuEvent(@NotNull JDA api, boolean success, String menu, @Nullable Exception exception, long elapsed) {
         super(api);
         this.success = success;
         this.menu = menu;
         this.exception = exception;
+        this.elapsed = elapsed;
     }
 }

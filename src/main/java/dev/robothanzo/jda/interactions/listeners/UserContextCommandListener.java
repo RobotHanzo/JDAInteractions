@@ -7,7 +7,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.internal.JDAImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
@@ -27,11 +26,13 @@ public class UserContextCommandListener extends ListenerAdapter {
             Method method = jdaInteractions.getUserContextCommands().get(event.getName());
             try {
                 method.invoke(method.getDeclaringClass().getDeclaredConstructors()[0].newInstance(), event);
-                log.info("Processed user context command {} in {}ms", event.getName(), (new Date().getTime() - beganProcessing.getTime()));
-                ((JDAImpl) event.getJDA()).handleEvent(new UserContextCommandEvent(event.getJDA(), true, event.getName(), null));
+                long elapsed = new Date().getTime() - beganProcessing.getTime();
+                log.info("Processed user context command {} in {}ms", event.getName(), elapsed);
+                event.getJDA().getEventManager().handle(new UserContextCommandEvent(event.getJDA(), true, event.getName(), null, elapsed));
             } catch (Exception e) {
-                log.error("Execution of user context command {} failed after {}ms", event.getName(), (new Date().getTime() - beganProcessing.getTime()), e);
-                ((JDAImpl) event.getJDA()).handleEvent(new UserContextCommandEvent(event.getJDA(), false, event.getName(), e));
+                long elapsed = new Date().getTime() - beganProcessing.getTime();
+                log.error("Execution of user context command {} failed after {}ms", event.getName(), elapsed, e);
+                event.getJDA().getEventManager().handle(new UserContextCommandEvent(event.getJDA(), false, event.getName(), e, elapsed));
             }
         }
     }

@@ -15,11 +15,13 @@ public class MessageContextCommandEvent extends Event {
     private final String command;
     @Nullable
     private final Exception exception;
+    private final long elapsed;
 
-    public MessageContextCommandEvent(@NotNull JDA api, boolean success, String command, @Nullable Exception exception) {
+    public MessageContextCommandEvent(@NotNull JDA api, boolean success, String command, @Nullable Exception exception, long elapsed) {
         super(api);
         this.success = success;
         this.command = command;
         this.exception = exception;
+        this.elapsed = elapsed;
     }
 }
