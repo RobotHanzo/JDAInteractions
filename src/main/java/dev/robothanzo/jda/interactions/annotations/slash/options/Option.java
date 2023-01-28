@@ -2,7 +2,7 @@ package dev.robothanzo.jda.interactions.annotations.slash.options;
 
 import dev.robothanzo.jda.interactions.annotations.slash.Command;
 import dev.robothanzo.jda.interactions.annotations.slash.Subcommand;
-import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  * {@link Boolean}<br>
  * {@link net.dv8tion.jda.api.entities.User}<br>
  * {@link net.dv8tion.jda.api.entities.Role}<br>
- * {@link net.dv8tion.jda.api.entities.GuildChannel} (Can be limited using the parameter channelTypes)<br>
+ * {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} (Can be limited using the parameter channelTypes)<br>
  * Types not listed above will must have their own {@link IMapper} implementation.
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -67,7 +67,7 @@ public @interface Option {
 
     /**
      * The channel types that the option supports.
-     * Only applies if the option is of type {@link net.dv8tion.jda.api.entities.Channel}.
+     * Only applies if the option is of type {@link net.dv8tion.jda.api.entities.channel.Channel}.
      * Leaving it empty will allow all channel types.
      */
     ChannelType[] channelTypes() default {};

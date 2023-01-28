@@ -20,15 +20,15 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -151,8 +151,8 @@ public class JDAInteractions {
             if (selectMenu.containsKey(menuName)) {
                 throw new IllegalArgumentException("Duplicate select menu: " + menuName);
             }
-            if (method.getParameters().length != 1 || method.getParameters()[0].getType() != SelectMenuInteractionEvent.class) {
-                throw new IllegalArgumentException("Invalid button (must contain exactly one parameter of type SelectMenuInteractionEvent): " + menuName);
+            if (method.getParameters().length != 1 || method.getParameters()[0].getType() != StringSelectInteractionEvent.class) {
+                throw new IllegalArgumentException("Invalid button (must contain exactly one parameter of type StringSelectInteractionEvent): " + menuName);
             }
             selectMenu.put(menuName, method);
         }

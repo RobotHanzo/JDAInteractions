@@ -5,7 +5,7 @@ import dev.robothanzo.jda.interactions.events.SelectMenuEvent;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,12 +14,13 @@ import java.util.Date;
 
 @Slf4j
 @AllArgsConstructor
+//TODO make an entityselectmenu listener, rename this one
 public class SelectMenuListener extends ListenerAdapter {
     private JDAInteractions jdaInteractions;
 
     @Override
     @SneakyThrows
-    public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
+    public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
         Date beganProcessing = new Date();
         if (jdaInteractions.getSelectMenu().containsKey(event.getSelectMenu().getId())) {
             Method method = jdaInteractions.getSelectMenu().get(event.getSelectMenu().getId());
