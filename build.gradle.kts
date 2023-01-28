@@ -29,7 +29,7 @@ tasks {
     named<ShadowJar>("shadowJar") {
         dependencies {
             include(dependency("org.reflections:reflections:0.10.2"))
-            include(dependency("net.dv8tion:JDA:5.0.0-alpha.18"))
+            include(dependency("net.dv8tion:JDA:5.0.0-beta.3"))
         }
         archiveClassifier.set("")
     }
