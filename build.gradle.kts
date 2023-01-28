@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation("net.dv8tion:JDA:5.0.0-alpha.18")
+    implementation("net.dv8tion:JDA:5.0.0-beta.3")
     implementation("org.reflections:reflections:0.10.2")
 
     compileOnly("org.projectlombok:lombok:1.18.24")
