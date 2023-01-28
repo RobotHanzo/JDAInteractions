@@ -24,8 +24,8 @@ public class AutoCompleteListener extends ListenerAdapter {
     @SneakyThrows
     public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
         Date beganProcessing = new Date();
-        if (jdaInteractions.getCommands().containsKey(event.getCommandPath())) {
-            for (Parameter parameter : jdaInteractions.getCommands().get(event.getCommandPath()).getParameters()) {
+        if (jdaInteractions.getCommands().containsKey(event.getFullCommandName())) {
+            for (Parameter parameter : jdaInteractions.getCommands().get(event.getFullCommandName()).getParameters()) {
                 if (parameter.isAnnotationPresent(Option.class)) {
                     Option option = parameter.getAnnotation(Option.class);
                     String optionName = option.value().isEmpty() ? parameter.getName().toLowerCase(Locale.ROOT) : option.value();

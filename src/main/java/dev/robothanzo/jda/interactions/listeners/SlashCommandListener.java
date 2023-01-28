@@ -42,9 +42,9 @@ public class SlashCommandListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         Date beganProcessing = new Date();
-        if (jdaInteractions.getCommands().containsKey(event.getCommandPath())) {
+        if (jdaInteractions.getCommands().containsKey(event.getFullCommandName())) {
             List<Object> parameters = new LinkedList<>();
-            Method method = jdaInteractions.getCommands().get(event.getCommandPath());
+            Method method = jdaInteractions.getCommands().get(event.getFullCommandName());
             for (Parameter parameter : method.getParameters()) {
                 if (parameter.getType().equals(SlashCommandInteractionEvent.class)) {
                     parameters.add(event);
@@ -60,7 +60,7 @@ public class SlashCommandListener extends ListenerAdapter {
                 } else {
                     if (event.getOption(optionName) == null) {
                         parameters.add(null);
-                        log.warn("Option {} was not found for command {} but it is not optional, a null was passed instead", optionName, event.getCommandPath());
+                        log.warn("Option {} was not found for command {} but it is not optional, a null was passed instead", optionName, event.getFullCommandName());
                         continue;
                     }
                 }
@@ -75,12 +75,12 @@ public class SlashCommandListener extends ListenerAdapter {
             try {
                 method.invoke(method.getDeclaringClass().getDeclaredConstructors()[0].newInstance(), parameters.toArray());
                 long elapsed = new Date().getTime() - beganProcessing.getTime();
-                log.info("Processed command {} in {}ms", event.getCommandPath(), elapsed);
-                event.getJDA().getEventManager().handle(new SlashCommandEvent(event.getJDA(), true, event.getCommandPath(), null, elapsed));
+                log.info("Processed command {} in {}ms", event.getFullCommandName(), elapsed);
+                event.getJDA().getEventManager().handle(new SlashCommandEvent(event.getJDA(), true, event.getFullCommandName(), null, elapsed));
             } catch (Exception e) {
                 long elapsed = new Date().getTime() - beganProcessing.getTime();
-                log.error("Execution of command {} failed after {}ms", event.getCommandPath(), elapsed, e);
-                event.getJDA().getEventManager().handle(new SlashCommandEvent(event.getJDA(), false, event.getCommandPath(), e, elapsed));
+                log.error("Execution of command {} failed after {}ms", event.getFullCommandName(), elapsed, e);
+                event.getJDA().getEventManager().handle(new SlashCommandEvent(event.getJDA(), false, event.getFullCommandName(), e, elapsed));
             }
         }
     }
