@@ -1,9 +1,10 @@
 package dev.robothanzo.jda.interactions;
 
 import dev.robothanzo.jda.interactions.annotations.Button;
-import dev.robothanzo.jda.interactions.annotations.SelectMenu;
 import dev.robothanzo.jda.interactions.annotations.context.MessageCtx;
 import dev.robothanzo.jda.interactions.annotations.context.UserCtx;
+import dev.robothanzo.jda.interactions.annotations.select.EntitySelectMenu;
+import dev.robothanzo.jda.interactions.annotations.select.StringSelectMenu;
 import dev.robothanzo.jda.interactions.annotations.slash.Command;
 import dev.robothanzo.jda.interactions.annotations.slash.Subcommand;
 import dev.robothanzo.jda.interactions.annotations.slash.options.AutoCompleter;
@@ -13,8 +14,8 @@ import dev.robothanzo.jda.interactions.annotations.slash.options.Option;
 import dev.robothanzo.jda.interactions.listeners.AutoCompleteListener;
 import dev.robothanzo.jda.interactions.listeners.ButtonListener;
 import dev.robothanzo.jda.interactions.listeners.MessageContextCommandListener;
-import dev.robothanzo.jda.interactions.listeners.SelectMenuListener;
 import dev.robothanzo.jda.interactions.listeners.SlashCommandListener;
+import dev.robothanzo.jda.interactions.listeners.StringSelectMenuListener;
 import dev.robothanzo.jda.interactions.listeners.UserContextCommandListener;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -35,6 +37,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.reflections.Reflections;
@@ -43,6 +46,7 @@ import org.reflections.scanners.Scanners;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,7 +75,9 @@ public class JDAInteractions {
     @Getter
     private final Map<String, Method> buttons = new HashMap<>();
     @Getter
-    private final Map<String, Method> selectMenu = new HashMap<>();
+    private final Map<String, Method> stringSelectMenus = new HashMap<>();
+    @Getter
+    private final Map<String, Method> entitySelectMenus = new HashMap<>();
     @Getter
     private final Map<String, Method> autoCompleters = new HashMap<>();
     @Getter
@@ -145,16 +151,35 @@ public class JDAInteractions {
     }
 
     private void collectSelectMenus() {
-        for (Method method : reflections.getMethodsAnnotatedWith(SelectMenu.class)) {
-            SelectMenu menu = method.getAnnotation(SelectMenu.class);
+        for (Method method : reflections.getMethodsAnnotatedWith(StringSelectMenu.class)) {
+            StringSelectMenu menu = method.getAnnotation(StringSelectMenu.class);
             String menuName = menu.value().isEmpty() ? method.getName() : menu.value();
-            if (selectMenu.containsKey(menuName)) {
-                throw new IllegalArgumentException("Duplicate select menu: " + menuName);
+            if (stringSelectMenus.containsKey(menuName)) {
+                throw new IllegalArgumentException("Duplicate string select menu: " + menuName);
             }
             if (method.getParameters().length != 1 || method.getParameters()[0].getType() != StringSelectInteractionEvent.class) {
-                throw new IllegalArgumentException("Invalid button (must contain exactly one parameter of type StringSelectInteractionEvent): " + menuName);
+                throw new IllegalArgumentException("Invalid string select menu (must contain exactly one parameter of type StringSelectInteractionEvent): " + menuName);
             }
-            selectMenu.put(menuName, method);
+            stringSelectMenus.put(menuName, method);
+        }
+        for (Method method : reflections.getMethodsAnnotatedWith(EntitySelectMenu.class)) {
+            EntitySelectMenu menu = method.getAnnotation(EntitySelectMenu.class);
+            String menuName = menu.value().isEmpty() ? method.getName() : menu.value();
+            if (entitySelectMenus.containsKey(menuName)) {
+                throw new IllegalArgumentException("Duplicate entity select menu: " + menuName);
+            }
+            if (method.getParameters().length != 1 || method.getParameters()[0].getType() != EntitySelectInteractionEvent.class) {
+                throw new IllegalArgumentException("Invalid entity select menu (must contain exactly one parameter of type EntitySelectInteractionEvent): " + menuName);
+            }
+            if (Arrays.asList(menu.targets()).contains(SelectTarget.CHANNEL)) {
+                if (menu.targets().length > 1) {
+                    throw new IllegalArgumentException("Invalid entity select menu (invalid target combination, only role & user are supported): " + menuName);
+                }
+                if (menu.channelTypes().length == 0) {
+                    throw new IllegalArgumentException("Invalid entity select menu (no channel types specified): " + menuName);
+                }
+            }
+            entitySelectMenus.put(menuName, method);
         }
     }
 
@@ -330,7 +355,7 @@ public class JDAInteractions {
                 new MessageContextCommandListener(this),
                 new SlashCommandListener(this),
                 new UserContextCommandListener(this),
-                new SelectMenuListener(this)
+                new StringSelectMenuListener(this)
         );
         return Objects.requireNonNull(shardManager.getShardById(0)).updateCommands()
                 .addCommands(collectCommands()).addCommands(collectContextCommands());
@@ -343,7 +368,7 @@ public class JDAInteractions {
                 new MessageContextCommandListener(this),
                 new SlashCommandListener(this),
                 new UserContextCommandListener(this),
-                new SelectMenuListener(this)
+                new StringSelectMenuListener(this)
         );
         return jda.updateCommands().addCommands(collectCommands()).addCommands(collectContextCommands());
     }
@@ -355,7 +380,7 @@ public class JDAInteractions {
                 new MessageContextCommandListener(this),
                 new SlashCommandListener(this),
                 new UserContextCommandListener(this),
-                new SelectMenuListener(this)
+                new StringSelectMenuListener(this)
         );
         return guild.updateCommands().addCommands(collectCommands()).addCommands(collectContextCommands());
     }

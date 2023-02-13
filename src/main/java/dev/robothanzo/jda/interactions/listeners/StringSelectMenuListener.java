@@ -1,7 +1,7 @@
 package dev.robothanzo.jda.interactions.listeners;
 
 import dev.robothanzo.jda.interactions.JDAInteractions;
-import dev.robothanzo.jda.interactions.events.SelectMenuEvent;
+import dev.robothanzo.jda.interactions.events.select.StringSelectMenuEvent;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -14,25 +14,24 @@ import java.util.Date;
 
 @Slf4j
 @AllArgsConstructor
-//TODO make an entityselectmenu listener, rename this one
-public class SelectMenuListener extends ListenerAdapter {
+public class StringSelectMenuListener extends ListenerAdapter {
     private JDAInteractions jdaInteractions;
 
     @Override
     @SneakyThrows
     public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
         Date beganProcessing = new Date();
-        if (jdaInteractions.getSelectMenu().containsKey(event.getSelectMenu().getId())) {
-            Method method = jdaInteractions.getSelectMenu().get(event.getSelectMenu().getId());
+        if (jdaInteractions.getStringSelectMenus().containsKey(event.getSelectMenu().getId())) {
+            Method method = jdaInteractions.getStringSelectMenus().get(event.getSelectMenu().getId());
             try {
                 method.invoke(method.getDeclaringClass().getDeclaredConstructors()[0].newInstance(), event);
                 long elapsed = new Date().getTime() - beganProcessing.getTime();
-                log.info("Processed select menu {} in {}ms", event.getSelectMenu().getId(), elapsed);
-                event.getJDA().getEventManager().handle(new SelectMenuEvent(event.getJDA(), true, event.getSelectMenu().getId(), null, elapsed));
+                log.info("Processed string select menu {} in {}ms", event.getSelectMenu().getId(), elapsed);
+                event.getJDA().getEventManager().handle(new StringSelectMenuEvent(event.getJDA(), true, event.getSelectMenu().getId(), null, elapsed));
             } catch (Exception e) {
                 long elapsed = new Date().getTime() - beganProcessing.getTime();
-                log.error("Execution of select menu {} failed after {}ms", event.getSelectMenu().getId(), elapsed, e);
-                event.getJDA().getEventManager().handle(new SelectMenuEvent(event.getJDA(), false, event.getSelectMenu().getId(), e, elapsed));
+                log.error("Execution of string select menu {} failed after {}ms", event.getSelectMenu().getId(), elapsed, e);
+                event.getJDA().getEventManager().handle(new StringSelectMenuEvent(event.getJDA(), false, event.getSelectMenu().getId(), e, elapsed));
             }
         }
     }

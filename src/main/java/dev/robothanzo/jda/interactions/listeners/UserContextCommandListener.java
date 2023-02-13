@@ -1,7 +1,7 @@
 package dev.robothanzo.jda.interactions.listeners;
 
 import dev.robothanzo.jda.interactions.JDAInteractions;
-import dev.robothanzo.jda.interactions.events.UserContextCommandEvent;
+import dev.robothanzo.jda.interactions.events.context.UserContextCommandEvent;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

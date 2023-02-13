@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.robothanzo"
-version = "0.0.12"
+version = "0.1.0"
 
 repositories {
     mavenCentral()

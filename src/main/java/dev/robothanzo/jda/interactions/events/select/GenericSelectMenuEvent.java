@@ -1,4 +1,4 @@
-package dev.robothanzo.jda.interactions.events;
+package dev.robothanzo.jda.interactions.events.select;
 
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
@@ -7,20 +7,20 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * This event will be called after the message context command handler has either finished or failed.
+ * This event will be called after the select menu handler either finished or failed.
  */
 @Getter
-public class MessageContextCommandEvent extends Event {
+public abstract class GenericSelectMenuEvent extends Event {
     private final boolean success;
-    private final String command;
+    private final String menu;
     @Nullable
     private final Exception exception;
     private final long elapsed;
 
-    public MessageContextCommandEvent(@NotNull JDA api, boolean success, String command, @Nullable Exception exception, long elapsed) {
+    public GenericSelectMenuEvent(@NotNull JDA api, boolean success, String menu, @Nullable Exception exception, long elapsed) {
         super(api);
         this.success = success;
-        this.command = command;
+        this.menu = menu;
         this.exception = exception;
         this.elapsed = elapsed;
     }
