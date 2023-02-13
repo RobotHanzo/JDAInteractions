@@ -13,6 +13,7 @@ import dev.robothanzo.jda.interactions.annotations.slash.options.Mapper;
 import dev.robothanzo.jda.interactions.annotations.slash.options.Option;
 import dev.robothanzo.jda.interactions.listeners.AutoCompleteListener;
 import dev.robothanzo.jda.interactions.listeners.ButtonListener;
+import dev.robothanzo.jda.interactions.listeners.EntitySelectMenuListener;
 import dev.robothanzo.jda.interactions.listeners.MessageContextCommandListener;
 import dev.robothanzo.jda.interactions.listeners.SlashCommandListener;
 import dev.robothanzo.jda.interactions.listeners.StringSelectMenuListener;
@@ -355,6 +356,7 @@ public class JDAInteractions {
                 new MessageContextCommandListener(this),
                 new SlashCommandListener(this),
                 new UserContextCommandListener(this),
+                new EntitySelectMenuListener(this),
                 new StringSelectMenuListener(this)
         );
         return Objects.requireNonNull(shardManager.getShardById(0)).updateCommands()
@@ -368,6 +370,7 @@ public class JDAInteractions {
                 new MessageContextCommandListener(this),
                 new SlashCommandListener(this),
                 new UserContextCommandListener(this),
+                new EntitySelectMenuListener(this),
                 new StringSelectMenuListener(this)
         );
         return jda.updateCommands().addCommands(collectCommands()).addCommands(collectContextCommands());
@@ -380,6 +383,7 @@ public class JDAInteractions {
                 new MessageContextCommandListener(this),
                 new SlashCommandListener(this),
                 new UserContextCommandListener(this),
+                new EntitySelectMenuListener(this),
                 new StringSelectMenuListener(this)
         );
         return guild.updateCommands().addCommands(collectCommands()).addCommands(collectContextCommands());
