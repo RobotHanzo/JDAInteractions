@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation("net.dv8tion:JDA:5.0.0-beta.3")
+    implementation("net.dv8tion:JDA:5.0.0-beta.6")
     implementation("org.reflections:reflections:0.10.2")
 
     compileOnly("org.projectlombok:lombok:1.18.24")
@@ -29,7 +29,7 @@ tasks {
     named<ShadowJar>("shadowJar") {
         dependencies {
             include(dependency("org.reflections:reflections:0.10.2"))
-            include(dependency("net.dv8tion:JDA:5.0.0-beta.3"))
+            include(dependency("net.dv8tion:JDA:5.0.0-beta.6"))
         }
         archiveClassifier.set("")
     }
