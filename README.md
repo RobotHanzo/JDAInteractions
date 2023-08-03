@@ -5,6 +5,7 @@ JDA.
 
 ### Download
 
+[![](https://jitpack.io/v/RobotHanzo/JDAInteractions.svg)](https://jitpack.io/#RobotHanzo/JDAInteractions)
 ```groovy
 repositories {
     mavenCentral()
@@ -12,6 +13,7 @@ repositories {
 }
 
 dependencies {
+    implementation("net.dv8tion:JDA:${jdaVersion}") // You should include your own copy of JDA
     implementation("com.github.robothanzo:JDAInteractions:${jdaInteractionsVersion}")
 }
 ```

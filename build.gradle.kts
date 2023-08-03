@@ -3,22 +3,22 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     java
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.2.2"
 }
 
 group = "dev.robothanzo"
-version = "0.1.1"
+version = "0.1.3"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("net.dv8tion:JDA:5.0.0-beta.22")
+    implementation("net.dv8tion:JDA:6.1.2")
     implementation("org.reflections:reflections:0.10.2")
 
-    compileOnly("org.projectlombok:lombok:1.18.32")
-    annotationProcessor("org.projectlombok:lombok:1.18.32")
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
 }
 
 tasks {
@@ -29,7 +29,6 @@ tasks {
     named<ShadowJar>("shadowJar") {
         dependencies {
             include(dependency("org.reflections:reflections:0.10.2"))
-            include(dependency("net.dv8tion:JDA:5.0.0-beta.22"))
         }
         archiveClassifier.set("")
     }
@@ -40,7 +39,7 @@ tasks {
     }
 
     build {
-        dependsOn("shadowJar")
+        dependsOn(shadowJar)
     }
 }
 

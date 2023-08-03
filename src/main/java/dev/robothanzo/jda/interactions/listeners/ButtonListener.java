@@ -22,17 +22,17 @@ public class ButtonListener extends ListenerAdapter {
     @SneakyThrows
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         Date beganProcessing = new Date();
-        if (jdaInteractions.getButtons().containsKey(event.getButton().getId())) {
-            Method method = jdaInteractions.getButtons().get(event.getButton().getId());
+        if (jdaInteractions.getButtons().containsKey(event.getButton().getCustomId())) {
+            Method method = jdaInteractions.getButtons().get(event.getButton().getCustomId());
             try {
                 method.invoke(method.getDeclaringClass().getDeclaredConstructors()[0].newInstance(), event);
                 long elapsed = new Date().getTime() - beganProcessing.getTime();
-                log.info("Processed button {} in {}ms", event.getButton().getId(), elapsed);
-                event.getJDA().getEventManager().handle(new ButtonEvent(event.getJDA(), true, event.getButton().getId(), null, elapsed));
+                log.info("Processed button {} in {}ms", event.getButton().getCustomId(), elapsed);
+                event.getJDA().getEventManager().handle(new ButtonEvent(event.getJDA(), true, event.getButton().getCustomId(), null, elapsed));
             } catch (Exception e) {
                 long elapsed = new Date().getTime() - beganProcessing.getTime();
-                log.error("Execution of button {} failed after {}ms", event.getButton().getId(), elapsed, e);
-                event.getJDA().getEventManager().handle(new ButtonEvent(event.getJDA(), false, event.getButton().getId(), e, elapsed));
+                log.error("Execution of button {} failed after {}ms", event.getButton().getCustomId(), elapsed, e);
+                event.getJDA().getEventManager().handle(new ButtonEvent(event.getJDA(), false, event.getButton().getCustomId(), e, elapsed));
             }
         }
     }

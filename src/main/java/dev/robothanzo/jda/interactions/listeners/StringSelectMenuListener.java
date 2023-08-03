@@ -21,17 +21,17 @@ public class StringSelectMenuListener extends ListenerAdapter {
     @SneakyThrows
     public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
         Date beganProcessing = new Date();
-        if (jdaInteractions.getStringSelectMenus().containsKey(event.getSelectMenu().getId())) {
-            Method method = jdaInteractions.getStringSelectMenus().get(event.getSelectMenu().getId());
+        if (jdaInteractions.getStringSelectMenus().containsKey(event.getSelectMenu().getCustomId())) {
+            Method method = jdaInteractions.getStringSelectMenus().get(event.getSelectMenu().getCustomId());
             try {
                 method.invoke(method.getDeclaringClass().getDeclaredConstructors()[0].newInstance(), event);
                 long elapsed = new Date().getTime() - beganProcessing.getTime();
-                log.info("Processed string select menu {} in {}ms", event.getSelectMenu().getId(), elapsed);
-                event.getJDA().getEventManager().handle(new StringSelectMenuEvent(event.getJDA(), true, event.getSelectMenu().getId(), null, elapsed));
+                log.info("Processed string select menu {} in {}ms", event.getSelectMenu().getCustomId(), elapsed);
+                event.getJDA().getEventManager().handle(new StringSelectMenuEvent(event.getJDA(), true, event.getSelectMenu().getCustomId(), null, elapsed));
             } catch (Exception e) {
                 long elapsed = new Date().getTime() - beganProcessing.getTime();
-                log.error("Execution of string select menu {} failed after {}ms", event.getSelectMenu().getId(), elapsed, e);
-                event.getJDA().getEventManager().handle(new StringSelectMenuEvent(event.getJDA(), false, event.getSelectMenu().getId(), e, elapsed));
+                log.error("Execution of string select menu {} failed after {}ms", event.getSelectMenu().getCustomId(), elapsed, e);
+                event.getJDA().getEventManager().handle(new StringSelectMenuEvent(event.getJDA(), false, event.getSelectMenu().getCustomId(), e, elapsed));
             }
         }
     }
