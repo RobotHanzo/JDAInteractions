@@ -17,8 +17,8 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-beta.22")
     implementation("org.reflections:reflections:0.10.2")
 
-    compileOnly("org.projectlombok:lombok:1.18.32")
-    annotationProcessor("org.projectlombok:lombok:1.18.32")
+    compileOnly("org.projectlombok:lombok:1.18.34")
+    annotationProcessor("org.projectlombok:lombok:1.18.34")
 }
 
 tasks {
