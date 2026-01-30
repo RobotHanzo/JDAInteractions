@@ -3,7 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     java
     `maven-publish`
-    id("com.gradleup.shadow") version "9.2.2"
+    id("com.gradleup.shadow") version "9.3.1"
 }
 
 group = "dev.robothanzo"
@@ -11,10 +11,12 @@ version = "0.1.3"
 
 repositories {
     mavenCentral()
+    maven("https://m2.dv8tion.net/releases")
+    maven("https://jitpack.io")
 }
 
 dependencies {
-    implementation("net.dv8tion:JDA:6.1.2")
+    implementation("net.dv8tion:JDA:6.3.0")
     implementation("org.reflections:reflections:0.10.2")
 
     compileOnly("org.projectlombok:lombok:1.18.42")

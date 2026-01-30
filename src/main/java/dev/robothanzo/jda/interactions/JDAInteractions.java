@@ -15,7 +15,6 @@ import dev.robothanzo.jda.interactions.listeners.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
@@ -28,7 +27,11 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.*;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.reflections.Reflections;
@@ -156,7 +159,7 @@ public class JDAInteractions {
             if (method.getParameters().length != 1 || method.getParameters()[0].getType() != EntitySelectInteractionEvent.class) {
                 throw new IllegalArgumentException("Invalid entity select menu (must contain exactly one parameter of type EntitySelectInteractionEvent): " + menuName);
             }
-            if (Arrays.asList(menu.targets()).contains(SelectTarget.CHANNEL)) {
+            if (Arrays.asList(menu.targets()).contains(net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget.CHANNEL)) {
                 if (menu.targets().length > 1) {
                     throw new IllegalArgumentException("Invalid entity select menu (invalid target combination, only role & user are supported): " + menuName);
                 }

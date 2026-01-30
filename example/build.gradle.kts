@@ -1,6 +1,6 @@
 plugins {
     java
-    id("com.gradleup.shadow") version "9.2.2"
+    id("com.gradleup.shadow") version "9.3.1"
 }
 
 group = "dev.robothanzo.jda.interactions"
@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     implementation(rootProject)// replace this with the dependency provided in README.md
-    implementation("net.dv8tion:JDA:6.1.2")
+    implementation("net.dv8tion:JDA:6.3.0")
     // you don"t need to include this, but we have to do it here due to how gradle works
     implementation("org.reflections:reflections:0.10.2")
     implementation("io.github.cdimascio:dotenv-java:3.2.0")

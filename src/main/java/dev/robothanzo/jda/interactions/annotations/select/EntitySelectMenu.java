@@ -1,12 +1,13 @@
 package dev.robothanzo.jda.interactions.annotations.select;
 
-import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 
 /**
  * Methods annotated with this annotation will be registered as an entity select menu at startup.
