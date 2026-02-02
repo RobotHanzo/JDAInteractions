@@ -44,14 +44,14 @@ import java.util.*;
 
 @Slf4j
 public class JDAInteractions {
-    public static final Map<OptionType, Class<?>> OPTION_TYPE_CLASS_MAP = Map.of(
-            OptionType.STRING, String.class,
-            OptionType.INTEGER, Long.class,
-            OptionType.NUMBER, Double.class,
-            OptionType.BOOLEAN, Boolean.class,
-            OptionType.USER, User.class,
-            OptionType.ROLE, Role.class,
-            OptionType.CHANNEL, GuildChannel.class
+    public static final Map<OptionType, Set<Class<?>>> OPTION_TYPE_CLASS_MAP = Map.of(
+            OptionType.STRING, Set.of(String.class),
+            OptionType.INTEGER, Set.of(Long.class, long.class, Integer.class, int.class),
+            OptionType.NUMBER, Set.of(Double.class, double.class, Float.class, float.class),
+            OptionType.BOOLEAN, Set.of(Boolean.class, boolean.class),
+            OptionType.USER, Set.of(User.class),
+            OptionType.ROLE, Set.of(Role.class),
+            OptionType.CHANNEL, Set.of(GuildChannel.class)
     );
     private final Reflections reflections;
     @Getter
@@ -95,12 +95,19 @@ public class JDAInteractions {
         collectAutoCompleters();
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    public static Optional<OptionType> getOptionTypeForClass(Class<?> cls) {
+        return OPTION_TYPE_CLASS_MAP.entrySet().stream()
+                .filter(e -> e.getValue().contains(cls))
+                .map(Map.Entry::getKey)
+                .findFirst();
+    }
+
     private OptionType getOptionType(Parameter parameter) {
         if (!mappers.containsKey(parameter.getType())) {
             throw new IllegalArgumentException("No mapper found for " + parameter.getType());
         }
-        return OPTION_TYPE_CLASS_MAP.entrySet().stream().filter(entry -> entry.getValue().equals(mappers.get(parameter.getType()).getSourceType())).findFirst().get().getKey();
+        Class<?> source = mappers.get(parameter.getType()).getSourceType();
+        return getOptionTypeForClass(source).orElseThrow(() -> new IllegalArgumentException("No option type mapping for mapper source: " + source));
     }
 
     private void collectMappers() {
@@ -111,7 +118,7 @@ public class JDAInteractions {
                     if (mappers.containsKey(((IMapper<?, ?>) mapperInstance).getTargetType())) {
                         throw new IllegalArgumentException("Duplicate mapper: " + mapper.getPackageName());
                     }
-                    if (!OPTION_TYPE_CLASS_MAP.containsValue(((IMapper<?, ?>) mapperInstance).getSourceType())) {
+                    if (getOptionTypeForClass(((IMapper<?, ?>) mapperInstance).getSourceType()).isEmpty()) {
                         throw new IllegalArgumentException("Invalid mapper (source is not a predefined type): " + mapper.getPackageName());
                     }
                     mappers.put(((IMapper<?, ?>) mapperInstance).getTargetType(), (IMapper<?, ?>) mapperInstance);
@@ -185,17 +192,13 @@ public class JDAInteractions {
         }
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     private OptionData getOptionFromParameter(Parameter parameter) {
         Option option = parameter.getAnnotation(Option.class);
         String optionName = option.value().isEmpty() ? parameter.getName().toLowerCase(Locale.ROOT) : option.value();
         OptionType optionType;
         Class<?> type = parameter.getType();
-        if (OPTION_TYPE_CLASS_MAP.containsValue(type)) {
-            optionType = OPTION_TYPE_CLASS_MAP.entrySet().stream().filter(entry -> entry.getValue().equals(type)).findFirst().get().getKey();
-        } else {
-            optionType = getOptionType(parameter);
-        }
+        Optional<OptionType> mapped = getOptionTypeForClass(type);
+        optionType = mapped.orElseGet(() -> getOptionType(parameter));
 
         if (option.autoComplete() && (!autoCompleters.containsKey(option.autoCompleter().isEmpty() ? optionName : option.autoCompleter()))) {
             throw new IllegalArgumentException("Auto completer not found for an autocomplete enabled option: " + optionName);
@@ -204,26 +207,27 @@ public class JDAInteractions {
         OptionData optionData = new OptionData(optionType, optionName,
                 option.description().isEmpty() ? optionName : option.description(),
                 !option.optional(), option.autoComplete());
-        if (optionType == OptionType.INTEGER) {
-            if (option.minLong() != Long.MIN_VALUE) {
-                optionData.setMinValue(option.minLong());
+        switch (optionType) {
+            case INTEGER -> {
+                if (option.minLong() != Long.MIN_VALUE) {
+                    optionData.setMinValue(option.minLong());
+                }
+                if (option.maxLong() != Long.MAX_VALUE) {
+                    optionData.setMaxValue(option.maxLong());
+                }
             }
-            if (option.maxLong() != Long.MAX_VALUE) {
-                optionData.setMaxValue(option.maxLong());
+            case NUMBER -> {
+                if (option.minDouble() != Double.MIN_VALUE) {
+                    optionData.setMinValue(option.minDouble());
+                }
+                if (option.maxDouble() != Double.MAX_VALUE) {
+                    optionData.setMaxValue(option.maxDouble());
+                }
             }
-        }
-
-        if (optionType == OptionType.NUMBER) {
-            if (option.minDouble() != Double.MIN_VALUE) {
-                optionData.setMinValue(option.minDouble());
+            case CHANNEL -> optionData.setChannelTypes(option.channelTypes());
+            default -> {
+                // no extra configuration for other types
             }
-            if (option.maxDouble() != Double.MAX_VALUE) {
-                optionData.setMaxValue(option.maxDouble());
-            }
-        }
-
-        if (optionType == OptionType.CHANNEL) {
-            optionData.setChannelTypes(option.channelTypes());
         }
         return optionData;
     }

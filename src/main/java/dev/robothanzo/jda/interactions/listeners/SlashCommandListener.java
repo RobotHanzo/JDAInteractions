@@ -64,12 +64,39 @@ public class SlashCommandListener extends ListenerAdapter {
                         continue;
                     }
                 }
-                if (JDAInteractions.OPTION_TYPE_CLASS_MAP.containsValue(parameter.getType())) {
-                    parameters.add(convertArgument(Objects.requireNonNull(event.getOption(optionName))));
+                // If the parameter type directly maps to an OptionType (including primitives/wrappers),
+                // use the built-in conversion and coerce primitives/wrappers as needed.
+                var opt = Objects.requireNonNull(event.getOption(optionName));
+                var mapped = JDAInteractions.getOptionTypeForClass(parameter.getType());
+                if (mapped.isPresent()) {
+                    Object converted = convertArgument(opt);
+                    Class<?> ptype = parameter.getType();
+                    if (converted == null) {
+                        parameters.add(null);
+                        continue;
+                    }
+                    switch (mapped.get()) {
+                        case INTEGER -> {
+                            // convert Long -> Integer/Long as required
+                            if (ptype == Integer.class || ptype == int.class) {
+                                parameters.add(((Long) converted).intValue());
+                            } else {
+                                parameters.add(converted);
+                            }
+                        }
+                        case NUMBER -> {
+                            // convert Double -> Float/Double as required
+                            if (ptype == Float.class || ptype == float.class) {
+                                parameters.add(((Double) converted).floatValue());
+                            } else {
+                                parameters.add(converted);
+                            }
+                        }
+                        default -> parameters.add(converted);
+                    }
                 } else {
                     IMapper<?, ?> mapper = jdaInteractions.getMappers().get(parameter.getType());
-                    parameters.add(mapper.map(mapper.getSourceType().cast(convertArgument(
-                            Objects.requireNonNull(event.getOption(optionName))))));
+                    parameters.add(mapper.map(mapper.getSourceType().cast(convertArgument(opt))));
                 }
             }
             try {
